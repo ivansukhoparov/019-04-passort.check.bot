@@ -1,0 +1,17 @@
+.DS_Store
+.idea
+.vscode
+.babelrc
+.stylelintrc.json
+.eslintrc.js
+*.lock
+*.ai
+*.log
+*.pdf
+*.psd
+*.sublime*
+dist
+node_modules/
+npm-debug.*
+Thumbs.db
+.env
