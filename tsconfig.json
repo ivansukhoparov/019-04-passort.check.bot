@@ -1,39 +1,17 @@
-//{
-//  "compilerOptions": {
-//    "target": "es2016",
-//    "module": "commonjs",
-//    "outDir": "./dist",
-//    "strict": true,
-//    "noImplicitReturns": true,
-//    "esModuleInterop": true,
-//    "allowSyntheticDefaultImports": true,
-//    "skipLibCheck": true,
-//    "forceConsistentCasingInFileNames": true
-//  },
-//  "include": ["src/**/*"],
-//  "exclude": ["node_modules", "**/*.test.ts"]
-//}
-//
-
 {
   "compilerOptions": {
+    "target": "es2018",
     "module": "commonjs",
-    "esModuleInterop": true,
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
 }
