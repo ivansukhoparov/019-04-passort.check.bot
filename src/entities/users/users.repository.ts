@@ -1,7 +1,7 @@
 import {inject, injectable} from "inversify";
 import {PGAdapter} from "../../base/pg.adapter";
 
-import {UserCreateModel, UserType, UserUpdateModel} from "../../types/user.types";
+import {UserCreateModel, UserType, UserUpdateModel} from "./types/user.types";
 import {QueryResult} from "pg";
 import {PassportFile} from "node-telegram-bot-api";
 

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {container} from "../../src/composition.root";
 import {UsersRepository} from "../../src/entities/users/users.repository";
 import {PGAdapter} from "../../src/base/pg.adapter";
-import {UserCreateModel, UserType, UserUpdateModel} from "../../src/types/user.types";
+import {UserCreateModel, UserType, UserUpdateModel} from "../../src/entities/users/types/user.types";
 
 const createUserDto: UserCreateModel = {
     chatId: 415684656516518,
