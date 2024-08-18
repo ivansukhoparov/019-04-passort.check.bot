@@ -49,7 +49,7 @@ export class StatementsRepository {
         }
     }
 
-    async getToCheck(count: number = 1, interval:string = '1 hour') {
+    async getToCheck(count: number = 1, interval: string = '1 hour') {
         try {
             const res = await this.db.query(`
             SELECT "id", "uid", "statusPercent" FROM "statements"
@@ -94,7 +94,7 @@ export class StatementsRepository {
         }
     }
 
-    async updateCheckedTime(id:string) {
+    async updateCheckedTime(id: string) {
         try {
             const res = await this.db.query(`
             UPDATE "statements"
@@ -108,9 +108,35 @@ export class StatementsRepository {
         }
     }
 
-    //TODO
-    async getUsersPairedToStatement (statementId:string){
+    async changeSubscriptionStatus(statementId: string, userId:string, status:boolean) {
+        try {
+            const res = await this.db.query(`
+               UPDATE "users_statements"
+               SET "subscription" = $1
+               WHERE "statementId" = $2 AND "userId"=$3
+                `,
+                [status, statementId, userId])
+            return res.rows
+        } catch (err) {
+            console.log(err)
+            return null
+        }
+    }
 
+    async getUsersByStatement(statementId: string) {
+        try {
+            const res = await this.db.query(`
+                SELECT "u"."id" AS "userId", "u_s"."statementId" AS "statementId", "u"."chatId", "u_s"."name"
+                FROM "users_statements" "u_s"
+                LEFT JOIN "users" "u" ON "u_s"."userId" = "u"."id"
+                WHERE "u_s"."statementId" = $1 AND "u_s"."subscription" = true;
+                `,
+                [statementId])
+            return res.rows
+        } catch (err) {
+            console.log(err)
+            return null
+        }
     }
 
 
