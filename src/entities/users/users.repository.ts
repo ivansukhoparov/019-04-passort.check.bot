@@ -66,10 +66,7 @@ export class UsersRepository {
                 `,
                 [filterValue])
 
-            return {
-                ...res.rows[0],
-                chatId: +res.rows[0].chatId
-            }
+            return res.rows[0]
 
         } catch (err) {
             console.log(err)
