@@ -34,11 +34,31 @@ const Statement_2 = (chatId = 987654321): StatementCreateTypes => {
     }
 }
 
+const usersRepository: UsersRepository = container.resolve<UsersRepository>(UsersRepository)
+const statementsRepository: StatementsRepository = container.resolve<StatementsRepository>(StatementsRepository)
+const pgAdapter: PGAdapter = container.resolve<PGAdapter>(PGAdapter)
+
+const getIds = async () => {
+    const _1_usersId = (await pgAdapter.query(`
+            SELECT "id" FROM "users"
+            WHERE "firstName" = 'IVAN'
+        `)).rows[0].id
+    const _2_usersId = (await pgAdapter.query(`
+            SELECT "id" FROM "users"
+            WHERE "firstName" = 'ARTEM'
+        `)).rows[0].id
+    const _1_statementId = (await pgAdapter.query(`
+            SELECT "id" FROM "statements"
+            WHERE "uid" = '2000381022024051600008131'
+        `)).rows[0].id
+    const _2_statementId = (await pgAdapter.query(`
+            SELECT "id" FROM "statements"
+            WHERE "uid" = '2000381022024051600008130'
+        `)).rows[0].id
+    return {_1_usersId, _2_usersId, _1_statementId, _2_statementId}
+}
 
 describe("Statements repo tests", () => {
-    const usersRepository: UsersRepository = container.resolve<UsersRepository>(UsersRepository)
-    const statementsRepository: StatementsRepository = container.resolve<StatementsRepository>(StatementsRepository)
-    const pgAdapter: PGAdapter = container.resolve<PGAdapter>(PGAdapter)
 
     beforeAll(async () => {
 
@@ -288,22 +308,7 @@ describe("Statements repo tests", () => {
     })
 
     it("+ should return correct pairs for users-statements", async () => {
-        const _1_usersId = (await pgAdapter.query(`
-            SELECT "id" FROM "users"
-            WHERE "firstName" = 'IVAN'
-        `)).rows[0].id
-        const _2_usersId = (await pgAdapter.query(`
-            SELECT "id" FROM "users"
-            WHERE "firstName" = 'ARTEM'
-        `)).rows[0].id
-        const _1_statementId = (await pgAdapter.query(`
-            SELECT "id" FROM "statements"
-            WHERE "uid" = '2000381022024051600008131'
-        `)).rows[0].id
-        const _2_statementId = (await pgAdapter.query(`
-            SELECT "id" FROM "statements"
-            WHERE "uid" = '2000381022024051600008130'
-        `)).rows[0].id
+        const {_1_usersId, _2_usersId, _1_statementId, _2_statementId} = await getIds()
 
 
         const pairs = await pgAdapter.query(`
@@ -314,11 +319,13 @@ describe("Statements repo tests", () => {
                 id: expect.any(String),
                 userId: _1_usersId,
                 statementId: _1_statementId,
+                subscription: true,
                 name: "Im-IVAN"
             }, {
                 id: expect.any(String),
                 userId: _2_usersId,
                 statementId: _2_statementId,
+                subscription: true,
                 name: "Im-ARTEM"
             },
         ])
@@ -335,22 +342,8 @@ describe("Statements repo tests", () => {
             name: "he-ARTEM"
         }).then((res) => expect(res).toBe(true))
 
-        const _1_usersId = (await pgAdapter.query(`
-            SELECT "id" FROM "users"
-            WHERE "firstName" = 'IVAN'
-        `)).rows[0].id
-        const _2_usersId = (await pgAdapter.query(`
-            SELECT "id" FROM "users"
-            WHERE "firstName" = 'ARTEM'
-        `)).rows[0].id
-        const _1_statementId = (await pgAdapter.query(`
-            SELECT "id" FROM "statements"
-            WHERE "uid" = '2000381022024051600008131'
-        `)).rows[0].id
-        const _2_statementId = (await pgAdapter.query(`
-            SELECT "id" FROM "statements"
-            WHERE "uid" = '2000381022024051600008130'
-        `)).rows[0].id
+
+        const {_1_usersId, _2_usersId, _1_statementId, _2_statementId} = await getIds()
 
 
         const pairs = await pgAdapter.query(`
@@ -361,23 +354,72 @@ describe("Statements repo tests", () => {
                 id: expect.any(String),
                 userId: _1_usersId,
                 statementId: _1_statementId,
+                subscription: true,
                 name: "Im-IVAN"
             }, {
                 id: expect.any(String),
                 userId: _2_usersId,
                 statementId: _2_statementId,
+                subscription: true,
                 name: "Im-ARTEM"
             }, {
                 id: expect.any(String),
                 userId: _2_usersId,
                 statementId: _1_statementId,
+                subscription: true,
                 name: "he-IVAN"
             }, {
                 id: expect.any(String),
                 userId: _1_usersId,
                 statementId: _2_statementId,
+                subscription: true,
                 name: "he-ARTEM"
             },
         ])
     })
+
+    it("Should return 2 users that has been subscribed to the statement ", async () => {
+        const {_1_usersId, _2_usersId, _1_statementId, _2_statementId} = await getIds()
+
+        const res = await statementsRepository.getUsersByStatement(_1_statementId)
+
+        expect(res).toEqual([
+            {
+                userId: _1_usersId,
+                statementId: _1_statementId,
+                chatId: User_1.chatId,
+                name: "Im-IVAN"
+            },           {
+                userId: _2_usersId,
+                statementId: _1_statementId,
+                chatId: User_2.chatId,
+                name: "he-IVAN"
+            }
+        ])
+    })
+
+    it("Should change status to false ", async () => {
+        const {_1_usersId, _2_usersId, _1_statementId, _2_statementId} = await getIds()
+
+        await statementsRepository.changeSubscriptionStatus(_1_statementId,_2_usersId,false)
+        const res = await statementsRepository.getUsersByStatement(_1_statementId)
+
+        expect(res).toEqual([
+            {
+                userId: _1_usersId,
+                statementId: _1_statementId,
+                chatId: User_1.chatId,
+                name: "Im-IVAN"
+            }
+        ])
+
+        await pgAdapter.query(`
+        SELECT "subscription"
+        FROM "users_statements"
+        WHERE "userId" = '${_2_usersId}' AND "statementId" = '${_1_statementId}'`).then((res)=>{
+            expect(res.rows[0].subscription).toBe(false)
+        })
+    })
 })
+
+
