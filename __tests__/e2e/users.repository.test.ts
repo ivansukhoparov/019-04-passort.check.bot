@@ -16,13 +16,13 @@ const updateUserDto:UserUpdateModel={
     username: "@p123",
 }
 
-describe("PGAdapter tests", () => {
+describe("User repo tests", () => {
     const usersRepository: UsersRepository = container.resolve<UsersRepository>(UsersRepository)
     const pgAdapter: PGAdapter = container.resolve<PGAdapter>(PGAdapter)
 
     beforeAll(async () => {
         await pgAdapter.init()
-        pgAdapter.query(`TRUNCATE TABLE "users", "statements"`)
+        pgAdapter.query(`TRUNCATE TABLE "users_statements", "users", "statements"`)
     })
 
     it(" create user method should return false if data is incorrect", async () => {
