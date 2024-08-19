@@ -89,7 +89,7 @@ export class StatementsRepository {
         }
     }
 
-    async getFirstChecked() {
+    async getFirstChecked():Promise<Date|null> {
         try {
             const res = await this.db.query(`
             SELECT "checkedAt" FROM "statements"
@@ -97,7 +97,11 @@ export class StatementsRepository {
             ORDER BY "checkedAt" DESC
             LIMIT 1
             `)
-            return res.rows
+            if (res.rows.length>0){
+                return res.rows[0].checkedAt;
+            }else {
+                return null
+            }
         } catch (err) {
             console.log(err)
             return null
