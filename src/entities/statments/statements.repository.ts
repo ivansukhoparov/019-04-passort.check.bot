@@ -73,10 +73,10 @@ export class StatementsRepository {
         }
     }
 
-    async getToCheck(count: number = 1, interval: string = '1 hour') {
+    async getToCheck(count: number = 1, interval: string = '1 hour'):Promise<Array<StatementCheckType>|null> {
         try {
             const res = await this.db.query(`
-            SELECT "id", "uid", "statusPercent" FROM "statements"
+            SELECT "id", "uid", "statusPercent", "statusName" FROM "statements"
             WHERE "isActive" = true 
             AND ("checkedAt" < NOW() - INTERVAL '${interval}' OR "checkedAt" IS NULL)
             ORDER BY "checkedAt" ASC
