@@ -3,7 +3,6 @@ import {PGAdapter} from "../../base/pg.adapter";
 
 import {UserCreateModel, UserType, UserUpdateModel} from "./types/user.types";
 import {QueryResult} from "pg";
-import {PassportFile} from "node-telegram-bot-api";
 
 
 @injectable()
@@ -11,7 +10,7 @@ export class UsersRepository {
     constructor(@inject(PGAdapter) protected db: PGAdapter) {
     }
 
-    async create(createDto: UserCreateModel):Promise<boolean> {
+    async create(createDto: UserCreateModel): Promise<boolean> {
         try {
             const res = await this.db.query(`
                 INSERT INTO "users" ("chatId", "firstName", "username")
@@ -42,8 +41,8 @@ export class UsersRepository {
         }
     }
 
-    async update(updateDto: UserUpdateModel):Promise<boolean> {
-       try {
+    async update(updateDto: UserUpdateModel): Promise<boolean> {
+        try {
             const res = await this.db.query(`
                 UPDATE "users" 
                 SET "firstName" = $1, "username" = $2
@@ -51,10 +50,10 @@ export class UsersRepository {
                 `,
                 [updateDto.firstName, updateDto.username, updateDto.chatId])
             return res.rowCount === 1
-        }catch (err){
-           console.log(err)
-           return false
-       }
+        } catch (err) {
+            console.log(err)
+            return false
+        }
     }
 
     async get(filterName: string, filterValue: string | number): Promise<UserType | null> {
@@ -71,6 +70,5 @@ export class UsersRepository {
             console.log(err)
             return null
         }
-
     }
 }
