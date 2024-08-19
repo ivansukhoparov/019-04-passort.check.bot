@@ -12,18 +12,11 @@ export class StatementsRepository {
         try {
             await this.db.query(`BEGIN;`)
 
-            const res = await this.db.query(`
-                SELECT "id" FROM "statements"
-                WHERE "uid" = $1`,
-                [createDto.uid])
-
-            if (res.rows.length === 0) {
-                await this.db.query(`
+            const statementIdRaw = await this.db.query(`
                     INSERT INTO "statements" ("uid")
-                    VALUES ($1);
-                    `,
-                    [createDto.uid])
-            }
+                    VALUES ($1)
+                    RETURNING "id";`,
+                [createDto.uid])
 
             await this.db.query(`
                 INSERT INTO "users_statements" ("name", "statementId", "userId")
@@ -36,14 +29,45 @@ export class StatementsRepository {
 
             await this.db.query(`COMMIT;`)
 
-            return true
+            return statementIdRaw.rows[0].id
         } catch (err) {
             try {
                 await this.db.query(`ROLLBACK;`)
             } catch (err) {
                 console.log(err)
-                return false
+                return null
             }
+            console.log(err)
+            return null
+        }
+    }
+
+    async get(filterName: string, filterValue: string | number): Promise<StatementTypes | null> {
+        try {
+            const res: QueryResult<StatementTypes> = await this.db.query(`
+                SELECT *
+                FROM "statements"
+                WHERE "${filterName}" = $1
+                `,
+                [filterValue])
+            if (res.rows.length === 0) return null
+            else return res.rows[0]
+        } catch (err) {
+            console.log(err)
+            return null
+        }
+    }
+
+    async bindWithUser(name: string, statementId: string, userId: string): Promise<boolean> {
+        try {
+            const res = await this.db.query(`
+                INSERT INTO "users_statements" ("name", "statementId", "userId")
+                VALUES ($1,$2,$3);
+                `,
+                [name, statementId, userId])
+
+            return res.rowCount === 1
+        } catch (err) {
             console.log(err)
             return false
         }
