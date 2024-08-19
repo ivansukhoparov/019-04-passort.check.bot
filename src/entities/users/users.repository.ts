@@ -26,20 +26,20 @@ export class UsersRepository {
         }
     }
 
-    async changeStatus(chatId: number, status: boolean):Promise<boolean> {
-      try  {
+    async changeStatus(userId: string, status: boolean): Promise<boolean> {
+        try {
             const res = await this.db.query(`
                 UPDATE "users" 
                 SET "isActive" = $1
-                WHERE "chatId" = $2
+                WHERE "id" = $2
                 `,
-                [ status,chatId])
+                [status, userId])
 
             return res.rowCount === 1
-        } catch (err){
-          console.log(err)
-          return false
-      }
+        } catch (err) {
+            console.log(err)
+            return false
+        }
     }
 
     async update(updateDto: UserUpdateModel):Promise<boolean> {
