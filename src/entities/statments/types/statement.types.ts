@@ -3,7 +3,16 @@ export type StatementTypes = {
     uid: string
     name: string
     internalStatus: StatementStatusType | null
-    lastCheck: Date
+    checkedAt: Date,
+    createdAt:Date,
+    isActive:boolean
+}
+
+export type StatementCheckType = {
+    id:string
+    uid: string
+    statusPercent:number
+    statusName:string
 }
 
 export type StatementStatusType = {
