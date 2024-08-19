@@ -65,9 +65,8 @@ export class UsersRepository {
                 WHERE "${filterName}" = $1
                 `,
                 [filterValue])
-
-            return res.rows[0]
-
+            if (res.rows.length === 0) return null
+            else return res.rows[0]
         } catch (err) {
             console.log(err)
             return null
