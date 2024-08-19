@@ -1,6 +1,7 @@
 import {inject, injectable} from "inversify";
 import {PGAdapter} from "../../base/pg.adapter";
-import {StatementCreateTypes, StatementUpdateTypes} from "./types/statement.types";
+import {StatementCheckType, StatementCreateTypes, StatementTypes, StatementUpdateTypes} from "./types/statement.types";
+import {QueryResult} from "pg";
 
 @injectable()
 export class StatementsRepository {
@@ -136,7 +137,7 @@ export class StatementsRepository {
         }
     }
 
-    async changeSubscriptionStatus(statementId: string, userId:string, status:boolean) {
+    async changeSubscriptionStatus(statementId: string, userId: string, status: boolean) {
         try {
             const res = await this.db.query(`
                UPDATE "users_statements"
