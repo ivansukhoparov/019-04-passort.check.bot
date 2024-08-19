@@ -8,8 +8,8 @@ export  type UserType = {
 
 export type UserCreateModel = {
     chatId: number
-    firstName: string
-    username: string
+    firstName: string|null
+    username: string|null
 }
 
 export type UserUpdateModel = {
