@@ -16,9 +16,10 @@ const updateUserDto:UserUpdateModel={
     username: "@p123",
 }
 
+const pgAdapter = new PGAdapter()
+const usersRepository= new UsersRepository(pgAdapter)
+
 describe("User repo tests", () => {
-    const usersRepository: UsersRepository = container.resolve<UsersRepository>(UsersRepository)
-    const pgAdapter: PGAdapter = container.resolve<PGAdapter>(PGAdapter)
 
     beforeAll(async () => {
         await pgAdapter.init()
@@ -42,7 +43,7 @@ describe("User repo tests", () => {
     })
 
     it(" changeStatus method should return false if chatId is incorrect ", async () => {
-        await usersRepository.changeStatus(234234, false).then((res) => expect(res).toBeFalsy())
+        await usersRepository.changeStatus("234234", false).then((res) => expect(res).toBeFalsy())
 
     })
 
@@ -80,4 +81,5 @@ describe("User repo tests", () => {
         })
     })
 
+    // return null if there is no user in db
 })
