@@ -1,14 +1,17 @@
 import {config} from "dotenv";
 import * as process from "process";
-import {injectable} from "inversify";
 
 config();
 
 
 export class AppSettings {
     public secretKey: string
+    public checkingUrl = "https://info.midpass.ru/api/request/"
 
-    public checking: { interval: string, limit: number }
+    public checking: { interval: string, limit: number } = {
+        interval: "1 hour",
+        limit: 1
+    }
 
     constructor() {
         this.secretKey = process.env.SECRET_KEY!
